@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import OpenAI from 'openai';
 dotenv.config();
 
-const { OPENAI_API_KEY, ASSISTANT_ID } = process.env;
+const { OPENAI_API_KEY } = process.env;
 const app = express();
 const port = process.env.port;
 let pollingInterval;
@@ -40,15 +40,13 @@ async function checkingStatus(res, threadId, runId) {
   const runObject = await openai.beta.threads.runs.retrieve(threadId, runId);
 
   const status = runObject.status;
-  console.log('Status:', status);
-
   if (status === 'completed') {
     clearInterval(pollingInterval);
 
     const messagesList = await openai.beta.threads.messages.list(threadId);
     let messages = messagesList.data.map((message) => message.content);
 
-    res.json({ messages });
+    res.json({ message: messages[messages.length - 1] });
   }
 }
 
@@ -77,5 +75,5 @@ app.post('/message', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log('Running server on port', port);
+  console.log('Running server...');
 });
