@@ -44,9 +44,9 @@ async function checkingStatus(res, threadId, runId) {
     clearInterval(pollingInterval);
 
     const messagesList = await openai.beta.threads.messages.list(threadId);
-    let messages = messagesList.data.map((message) => message.content);
+    const message = messagesList.data[0].content;
 
-    res.json({ message: messages[messages.length - 1] });
+    res.json({ message: message[0].text.value });
   }
 }
 
