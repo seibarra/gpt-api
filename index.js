@@ -6,7 +6,7 @@ dotenv.config();
 
 const { OPENAI_API_KEY, ASSISTANT_ID } = process.env;
 const app = express();
-const port = process.env.port || 3000;
+const port = process.env.port;
 let pollingInterval;
 
 const openai = new OpenAI({
