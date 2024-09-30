@@ -1,19 +1,9 @@
-import https from 'https';
-import fs from 'fs';
 import express from 'express';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import OpenAI from 'openai';
-dotenv.config();
 
 const app = express();
-const PORT = 3001;
-
-const options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/srv609838.hstgr.cloud/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/srv609838.hstgr.cloud/fullchain.pem')
-};
-
+const port = process.env.port || 3001;
 let pollingInterval;
 
 async function createThread(apiKey) {
@@ -93,7 +83,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/thread', (req, res) => {
+app.get('/thread', (req, res) => {
   const { apiKey } = req.body;
 
   if (apiKey === undefined) {
@@ -127,10 +117,6 @@ app.post('/message', (req, res) => {
   });
 });
 
-app.get('/test', (req, res) => {
-  res.json({ message: 'Test endpoint' });
-});
-
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`HTTPS Server running...`);
+app.listen(port, () => {
+  console.log('Running server...');
 });
