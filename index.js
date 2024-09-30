@@ -9,10 +9,10 @@ const port = process.env.por || 3001;
 let pollingInterval;
 
 async function createThread(apiKey) {
-  const thread = await openai.beta.threads.create()
   const openai = new OpenAI({
     apiKey
   });
+  const thread = await openai.beta.threads.create()
 
   return thread;
 }
