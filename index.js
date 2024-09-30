@@ -83,7 +83,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/thread', (req, res) => {
+app.post('/thread', (req, res) => {
   const { apiKey } = req.body;
 
   if (apiKey === undefined) {
@@ -119,10 +119,6 @@ app.post('/message', (req, res) => {
 
 app.get('/', (req, res) => {
   res.send('Ok');
-});
-
-app.get('/test', (req, res) => {
-  res.send('Test ok.');
 });
 
 app.listen(port, () => {
