@@ -7,7 +7,7 @@ import OpenAI from 'openai';
 dotenv.config();
 
 const app = express();
-const PORT = 443;
+const PORT = 3001;
 
 const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/srv609838.hstgr.cloud/privkey.pem'),
