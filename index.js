@@ -121,6 +121,10 @@ app.get('/', (req, res) => {
   res.send('Ok');
 });
 
+app.get('/test', (req, res) => {
+  res.send('Test ok.');
+});
+
 app.listen(port, () => {
   console.log('Running server...');
 });
