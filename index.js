@@ -4,21 +4,24 @@ import dotenv from 'dotenv';
 import OpenAI from 'openai';
 dotenv.config();
 
-const { OPENAI_API_KEY } = process.env;
 const app = express();
-const port = process.env.port;
+const port = process.env.por || 3001;
 let pollingInterval;
 
-const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY,
-});
-
-async function createThread() {
+async function createThread(apiKey) {
   const thread = await openai.beta.threads.create()
+  const openai = new OpenAI({
+    apiKey
+  });
+
   return thread;
 }
 
-async function addMessage(threadId, message) {
+async function addMessage(apiKey, threadId, message) {
+  const openai = new OpenAI({
+    apiKey
+  });
+
   const response = await openai.beta.threads.messages.create(
     threadId,
     {
@@ -29,14 +32,22 @@ async function addMessage(threadId, message) {
   return response;
 }
 
-async function runAssistant(threadId, assistantId) {
+async function runAssistant(apiKey, threadId, assistantId) {
+  const openai = new OpenAI({
+    apiKey
+  });
+
   const response = await openai.beta.threads.runs.create(threadId,{
     assistant_id: assistantId,
   });
   return response;
 }
 
-async function checkingStatus(res, threadId, runId) {
+async function checkingStatus(res, apiKey, threadId, runId) {
+  const openai = new OpenAI({
+    apiKey,
+  });
+
   const runObject = await openai.beta.threads.runs.retrieve(threadId, runId);
 
   const status = runObject.status;
@@ -58,18 +69,20 @@ app.use((req, res, next) => {
 });
 
 app.get('/thread', (req, res) => {
-  createThread().then((thread) => {
+  const { apiKey } = req.body;
+
+  createThread(apiKey).then((thread) => {
     res.json({ threadId: thread.id });
   });
 })
 
 app.post('/message', (req, res) => {
-  const { threadId, assistantId, message } = req.body;
+  const { apiKey, threadId, assistantId, message } = req.body;
 
-  addMessage(threadId, message).then(() => {
-    runAssistant(threadId, assistantId).then((response) => {
+  addMessage(apiKey, threadId, message).then(() => {
+    runAssistant(apiKey, threadId, assistantId).then((response) => {
       const runId = response.id;
-      pollingInterval = setInterval(() => checkingStatus(res, threadId, runId), 5000);
+      pollingInterval = setInterval(() => checkingStatus(res, apiKey, threadId, runId), 5000);
     });
   });
 });
