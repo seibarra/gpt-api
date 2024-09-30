@@ -117,6 +117,10 @@ app.post('/message', (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+  res.send('Ok');
+});
+
 app.listen(port, () => {
   console.log('Running server...');
 });
