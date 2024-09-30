@@ -5,7 +5,7 @@ import OpenAI from 'openai';
 dotenv.config();
 
 const app = express();
-const port = process.env.por || 3001;
+const port = process.env.port || 3001;
 let pollingInterval;
 
 async function createThread(apiKey) {
@@ -85,7 +85,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/thread', (req, res) => {
+app.post('/thread', (req, res) => {
   const { apiKey } = req.body;
 
   if (apiKey === undefined) {
