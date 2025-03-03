@@ -83,46 +83,36 @@ app.post('/message', async (req, res) => {
   const { apiKey, threadId, assistantId, message } = req.body;
 
   if (!apiKey || !threadId || !assistantId || !message) {
-    res.status(400).json({ message: 'Error: 400' });
-    return;
+    return res.status(400).json({ message: 'Error: 400' });
   }
 
   const messageResponse = await addMessage(apiKey, threadId, message);
   if (!messageResponse) {
-    res.status(500).json({ message: 'Error adding message.' });
-    return;
+    return res.status(500).json({ message: 'Error: 500' });
   }
 
   const runResponse = await runAssistant(apiKey, threadId, assistantId);
   if (!runResponse) {
-    res.status(500).json({ message: 'Error running assistant.' });
-    return;
+    return res.status(500).json({ message: 'Error: 500' });
   }
 
   const runId = runResponse.id;
 
-  const intervalId = setInterval(async () => {
-    const status = await checkStatus(apiKey, threadId, runId);
+  try {
+    let status;
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      status = await checkStatus(apiKey, threadId, runId);
+    } while (status !== 'completed');
 
-    if (status === 'completed') {
-      clearInterval(intervalId);
-      pollingIntervals.delete(threadId);
-
-      const latestMessage = await getLatestMessage(apiKey, threadId);
-      res.json({ message: latestMessage || 'No message content available.' });
-    }
-  }, 5000);
-
-  pollingIntervals.set(threadId, intervalId);
-
-  req.on('close', () => {
-    if (pollingIntervals.has(threadId)) {
-      clearInterval(pollingIntervals.get(threadId));
-      pollingIntervals.delete(threadId);
-    }
-  });
+    const latestMessage = await getLatestMessage(apiKey, threadId);
+    return res.json({ message: latestMessage || 'Error de conexión, vuelva a intentarlo más tarde.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error: 500' });
+  }
 });
 
+
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running.`);
 });
