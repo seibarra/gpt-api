@@ -23,7 +23,8 @@ app.get('/api/extraer-mensaje', (req, res) => {
     new_data
   );
 
-  res.status(200).json({ mensajesNuevos });
+  // send as string
+  res.status(200).send(mensajesNuevos);
 });
 
 app.post('/thread', async (req, res) => {
