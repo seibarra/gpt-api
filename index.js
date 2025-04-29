@@ -15,8 +15,8 @@ app.use((req, res, next) => {
 
 // Rutas
 
-app.post('/api/extraer-mensaje', (req, res) => {
-  const { texto_notificacion, new_data } = req.body;
+app.get('/api/extraer-mensaje', (req, res) => {
+  const { texto_notificacion, new_data } = req.query;
 
   const mensajesNuevos = extraerMensajesNuevosConInicio(
     texto_notificacion,
